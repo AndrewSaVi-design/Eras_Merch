@@ -34,7 +34,6 @@ export default function Home() {
     { id: 7, artista: 'artista2', nombre: 'Polera Bad Bunny - V3', precio: 60, imagenes: ['/polos/bad_bunny/polera_UVST_adelante.png', '/polos/bad_bunny/polera_UVST_atras.png'] },
     { id: 8, artista: 'artista2', nombre: 'Polera Bad Bunny - V4', precio: 60, imagenes: ['/polos/bad_bunny/Polo_1A_BB.png', '/polos/bad_bunny/Polo_1B_BB.png'] },
     { id: 9, artista: 'artista2', nombre: 'Polera Bad Bunny - V5', precio: 60, imagenes: ['/polos/bad_bunny/Polo_2_BB.png'] },
-    //{ id: 10, artista: 'artista2', nombre: 'Polera Bad Bunny - V6', precio: 60, imagenes: ['/polos/bad_bunny/Polo_3A_BB.png', '/polos/bad_bunny/Polo_3B_BB.png'] },
     { id: 11, artista: 'artista2', nombre: 'Polera Bad Bunny - V7', precio: 60, imagenes: ['/polos/bad_bunny/Polo_4_BB.png'] },
     { id: 12, artista: 'artista2', nombre: 'Polera Bad Bunny - V8', precio: 60, imagenes: ['/polos/bad_bunny/Polo_5A_BB.png', '/polos/bad_bunny/Polo_5B_BB.png'] },
     { id: 13, artista: 'artista2', nombre: 'Polera Bad Bunny - V9', precio: 60, imagenes: ['/polos/bad_bunny/Polo_6_BB.png'] },
@@ -53,7 +52,24 @@ export default function Home() {
     { id: 26, artista: 'artista2', nombre: 'Polera Bad Bunny - V22', precio: 60, imagenes: ['/polos/bad_bunny/Polo_20A_BB.png', '/polos/bad_bunny/Polo_20B_BB.png'] },
     { id: 27, artista: 'artista2', nombre: 'Polera Bad Bunny - V23', precio: 60, imagenes: ['/polos/bad_bunny/Polo_21_BB.png'] },
     { id: 28, artista: 'artista2', nombre: 'Polera Bad Bunny - V24', precio: 60, imagenes: ['/polos/bad_bunny/Polo_22_BB.png'] },
-    { id: 29, artista: 'artista2', nombre: 'Polera Bad Bunny - V25', precio: 60, imagenes: ['/polos/bad_bunny/Polo_23_BB.png'] }  
+    { id: 29, artista: 'artista2', nombre: 'Polera Bad Bunny - V25', precio: 60, imagenes: ['/polos/bad_bunny/Polo_23_BB.png'] },
+    { id: 30, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V1', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_1a_as.png', '/polos/alejandro_sanz/capucha_1b_as.png'] },
+    { id: 31, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V2', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_2a_as.png', '/polos/alejandro_sanz/capucha_2b_as.png'] },
+    { id: 32, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V3', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_3a_as.png', '/polos/alejandro_sanz/capucha_3b_as.png'] },
+    { id: 33, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V4', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_4a_as.png', '/polos/alejandro_sanz/capucha_4b_as.png'] },
+    { id: 34, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V5', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_1a_as.png', '/polos/alejandro_sanz/polo_1b_as.png'] },
+    { id: 35, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V6', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_2a_as.png', '/polos/alejandro_sanz/polo_2b_as.png'] },
+    { id: 36, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V7', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_4a_as.png', '/polos/alejandro_sanz/polo_4b_as.png'] },
+    { id: 37, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V8', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_5a_as.png', '/polos/alejandro_sanz/polo_5b_as.png'] },
+    { id: 38, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V9', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_6_as.png'] },
+    { id: 39, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V10', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_7a_as.png', '/polos/alejandro_sanz/polo_7b_as.png'] },
+    { id: 40, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V11', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_8a_as.png', '/polos/alejandro_sanz/polo_8b_as.png'] },
+    { id: 41, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V12', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_9_as.png'] },
+    { id: 42, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V13', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_10a_as.png', '/polos/alejandro_sanz/polo_10b_as.png'] },
+    { id: 43, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V14', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_11_as.png'] },
+    { id: 44, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V15', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_12_as.png'] },
+    { id: 45, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V16', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_13_as.png'] },
+    { id: 46, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V17', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_14_as.png'] }
   ];
 
   const artistasFiltrados = artistas.filter(art => 
@@ -73,7 +89,8 @@ export default function Home() {
     setCarrito(carrito.filter((_, index) => index !== indexAEliminar));
   };
 
-  const toggleVoltear = (id) => {
+  const toggleVoltear = (id, tieneMultiplesImagenes) => {
+    if (!tieneMultiplesImagenes) return; // Si no tiene 2 imágenes, no hace nada
     setPoloVolteado(poloVolteado === id ? null : id);
   };
 
@@ -103,7 +120,6 @@ export default function Home() {
         <img src="/erasmerch.jpeg" alt="Logo" className="w-40 h-auto mb-4" />
         <h1 className="text-xl font-serif tracking-[0.4em] mb-6 uppercase">ERAS MERCH</h1>
         
-        {/* REDES SOCIALES CON LOGO OFICIAL DE TIKTOK */}
         <div className="flex gap-8 text-gray-400">
           <a href={links.instagram} target="_blank" className="hover:text-black transition-colors"><Instagram size={22} /></a>
           <a href={links.facebook} target="_blank" className="hover:text-black transition-colors"><Facebook size={22} /></a>
@@ -194,41 +210,44 @@ export default function Home() {
             <ArrowLeft size={14} /> Volver
           </button>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-            {polosAMostrar.map(polo => (
-              <div key={polo.id} className="group flex flex-col items-center">
-                <div 
-                  onClick={() => toggleVoltear(polo.id)}
-                  className="aspect-[3/4] w-full bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100 shadow-sm cursor-pointer"
-                >
-                  <img 
-                    src={polo.imagenes[0]} 
-                    className={`w-full h-full object-cover transition-opacity duration-500 ${poloVolteado === polo.id ? 'opacity-0' : 'opacity-100'}`} 
-                  />
-                  {polo.imagenes.length > 1 && (
-                    <>
-                      <img 
-                        src={polo.imagenes[1]} 
-                        className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${poloVolteado === polo.id ? 'opacity-100' : 'opacity-0'}`} 
-                      />
-                      <div className="absolute bottom-3 right-3 bg-white/60 backdrop-blur-sm p-1.5 rounded-full">
-                        <RefreshCw size={12} className={`text-gray-500 transition-transform duration-500 ${poloVolteado === polo.id ? 'rotate-180' : 'rotate-0'}`} />
-                      </div>
-                    </>
-                  )}
+            {polosAMostrar.map(polo => {
+              const tieneMultiples = polo.imagenes.length > 1;
+              return (
+                <div key={polo.id} className="group flex flex-col items-center">
+                  <div 
+                    onClick={() => toggleVoltear(polo.id, tieneMultiples)}
+                    className={`aspect-[3/4] w-full bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100 shadow-sm ${tieneMultiples ? 'cursor-pointer' : 'cursor-default'}`}
+                  >
+                    <img 
+                      src={polo.imagenes[0]} 
+                      className={`w-full h-full object-cover transition-opacity duration-500 ${poloVolteado === polo.id ? 'opacity-0' : 'opacity-100'}`} 
+                    />
+                    {tieneMultiples && (
+                      <>
+                        <img 
+                          src={polo.imagenes[1]} 
+                          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${poloVolteado === polo.id ? 'opacity-100' : 'opacity-0'}`} 
+                        />
+                        <div className="absolute bottom-3 right-3 bg-white/60 backdrop-blur-sm p-1.5 rounded-full">
+                          <RefreshCw size={12} className={`text-gray-500 transition-transform duration-500 ${poloVolteado === polo.id ? 'rotate-180' : 'rotate-0'}`} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <h3 className="mt-5 text-[10px] font-bold uppercase tracking-tight text-center px-2">{polo.nombre}</h3>
+                  <p className="text-gray-400 text-[10px] mt-1 mb-4 font-serif">S/ {polo.precio}</p>
+                  <button 
+                    onClick={(e) => agregarAlCarrito(e, polo)}
+                    disabled={notificacion === polo.id}
+                    className={`text-[9px] border w-full py-3 uppercase tracking-[0.2em] font-bold transition-all duration-500 rounded-lg ${
+                      notificacion === polo.id ? 'bg-green-500 border-green-500 text-white' : 'border-black text-black hover:bg-black hover:text-white'
+                    }`}
+                  >
+                    {notificacion === polo.id ? 'Añadido' : 'Añadir al carrito'}
+                  </button>
                 </div>
-                <h3 className="mt-5 text-[10px] font-bold uppercase tracking-tight text-center px-2">{polo.nombre}</h3>
-                <p className="text-gray-400 text-[10px] mt-1 mb-4 font-serif">S/ {polo.precio}</p>
-                <button 
-                  onClick={(e) => agregarAlCarrito(e, polo)}
-                  disabled={notificacion === polo.id}
-                  className={`text-[9px] border w-full py-3 uppercase tracking-[0.2em] font-bold transition-all duration-500 rounded-lg ${
-                    notificacion === polo.id ? 'bg-green-500 border-green-500 text-white' : 'border-black text-black hover:bg-black hover:text-white'
-                  }`}
-                >
-                  {notificacion === polo.id ? 'Añadido' : 'Añadir al carrito'}
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
