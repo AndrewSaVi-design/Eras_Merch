@@ -25,13 +25,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // 1. REEMPLAZA ESTOS DOS LINKS CON TUS LINKS CSV REALES
     const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv"; 
     const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv";
 
-    // Función para cargar artistas
     const cargarDatos = async () => {
-      // Usamos cachebuster para evitar que el navegador guarde versiones viejas
       const cb = "&cb=" + new Date().getTime();
 
       Papa.parse(LINK_ARTISTAS + cb, {
@@ -40,7 +37,6 @@ export default function Home() {
         complete: (resArtistas) => {
           setArtistas(resArtistas.data.filter(a => a.id));
 
-          // Una vez cargados artistas, cargamos productos
           Papa.parse(LINK_PRODUCTOS + cb, {
             download: true,
             header: true,
@@ -58,17 +54,19 @@ export default function Home() {
                 }));
               setProductos(transformados);
               setCargando(false);
-            }
+            },
+            error: () => setCargando(false)
           });
-        }
+        },
+        error: () => setCargando(false)
       });
     };
 
     cargarDatos();
   }, []);
 
-  const artistasFiltrados = artistas.filter(art => 
-    art.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  const artistasFiltrados = (artistas || []).filter(art => 
+    art?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   const polosAMostrar = productos.filter(p => p.artista === artistaId);
@@ -255,7 +253,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* WHATSAPP FLOTANTE (Logo Oficial) */}
+      {/* WHATSAPP FLOTANTE */}
       <a 
         href={links.whatsapp} 
         target="_blank"
@@ -269,5 +267,3 @@ export default function Home() {
     </main>
   );
 }
-
-// Actualización final
