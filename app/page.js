@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 import { Instagram, Facebook, ArrowLeft, ShoppingBag, X, Trash2, Check, Search, RefreshCw } from 'lucide-react';
 
 export default function Home() {
@@ -11,6 +12,11 @@ export default function Home() {
   const [busqueda, setBusqueda] = useState('');
   const [poloVolteado, setPoloVolteado] = useState(null);
 
+  // ESTADOS DINÁMICOS
+  const [artistas, setArtistas] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
   const links = {
     instagram: "https://www.instagram.com/eras_merch?igsh=aWY0OHJ3cWlqbmc%3D&utm_source=qr",
     facebook: "https://www.facebook.com/share/1AqEUYkZKL/?mibextid=wwXIfr",
@@ -18,59 +24,48 @@ export default function Home() {
     whatsapp: "https://wa.me/message/VBDNL4S6LVXTP1"
   };
 
-  const artistas = [
-    { id: 'artista1', nombre: 'Dua Lipa', foto: '/foto_dua_lipa.png' },
-    { id: 'artista2', nombre: 'Bad Bunny', foto: '/foto_bad_bunny.png' },
-    { id: 'artista3', nombre: 'Alejandro Sanz', foto: '/alejandro_sanz.jpeg' },
-  ];
+  useEffect(() => {
+    // 1. REEMPLAZA ESTOS DOS LINKS CON TUS LINKS CSV REALES
+    const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv"; 
+    const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv";
 
-  const productos = [
-    { id: 1, artista: 'artista1', nombre: 'Polo Dua Lipa - Design 1', precio: 60, imagenes: ['/polos/dua_lipa/polo1.png', '/polos/dua_lipa/polo1_(atras).png'] },
-    { id: 2, artista: 'artista1', nombre: 'Polo Dua Lipa - Design 2', precio: 60, imagenes: ['/polos/dua_lipa/polo2_(adelante).png'] },
-    { id: 3, artista: 'artista1', nombre: 'Polera Capucha Dua Lipa - V1', precio: 85, imagenes: ['/polos/dua_lipa/polera1_(adelante).png', '/polos/dua_lipa/polera2(atras).png'] },
-    { id: 4, artista: 'artista1', nombre: 'Polera Capucha Dua Lipa - V2', precio: 85, imagenes: ['/polos/dua_lipa/polera_capucha2(adelante).png', '/polos/dua_lipa/polera_capucha2(atras).png'] },
-    { id: 5, artista: 'artista2', nombre: 'Polera Bad Bunny - V1', precio: 60, imagenes: ['/polos/bad_bunny/Manga0_1_BB.png'] },
-    { id: 6, artista: 'artista2', nombre: 'Polera Bad Bunny - V2', precio: 60, imagenes: ['/polos/bad_bunny/Manga0_2_BB.png'] },
-    { id: 7, artista: 'artista2', nombre: 'Polera Bad Bunny - V3', precio: 60, imagenes: ['/polos/bad_bunny/polera_UVST_adelante.png', '/polos/bad_bunny/polera_UVST_atras.png'] },
-    { id: 8, artista: 'artista2', nombre: 'Polera Bad Bunny - V4', precio: 60, imagenes: ['/polos/bad_bunny/Polo_1A_BB.png', '/polos/bad_bunny/Polo_1B_BB.png'] },
-    { id: 9, artista: 'artista2', nombre: 'Polera Bad Bunny - V5', precio: 60, imagenes: ['/polos/bad_bunny/Polo_2_BB.png'] },
-    { id: 11, artista: 'artista2', nombre: 'Polera Bad Bunny - V7', precio: 60, imagenes: ['/polos/bad_bunny/Polo_4_BB.png'] },
-    { id: 12, artista: 'artista2', nombre: 'Polera Bad Bunny - V8', precio: 60, imagenes: ['/polos/bad_bunny/Polo_5A_BB.png', '/polos/bad_bunny/Polo_5B_BB.png'] },
-    { id: 13, artista: 'artista2', nombre: 'Polera Bad Bunny - V9', precio: 60, imagenes: ['/polos/bad_bunny/Polo_6_BB.png'] },
-    { id: 14, artista: 'artista2', nombre: 'Polera Bad Bunny - V10', precio: 60, imagenes: ['/polos/bad_bunny/Polo_7A_BB.png', '/polos/bad_bunny/Polo_7B_BB.png'] },
-    { id: 15, artista: 'artista2', nombre: 'Polera Bad Bunny - V11', precio: 60, imagenes: ['/polos/bad_bunny/Polo_8A_BB.png', '/polos/bad_bunny/Polo_8B_BB.png'] },
-    { id: 16, artista: 'artista2', nombre: 'Polera Bad Bunny - V12', precio: 60, imagenes: ['/polos/bad_bunny/Polo_9_BB.png'] },
-    { id: 17, artista: 'artista2', nombre: 'Polera Bad Bunny - V13', precio: 60, imagenes: ['/polos/bad_bunny/Polo_10A_BB.png', '/polos/bad_bunny/Polo_10B_BB.png'] },
-    { id: 18, artista: 'artista2', nombre: 'Polera Bad Bunny - V14', precio: 60, imagenes: ['/polos/bad_bunny/Polo_11_BB.png'] },
-    { id: 19, artista: 'artista2', nombre: 'Polera Bad Bunny - V15', precio: 60, imagenes: ['/polos/bad_bunny/Polo_13_BB.png'] },
-    { id: 20, artista: 'artista2', nombre: 'Polera Bad Bunny - V16', precio: 60, imagenes: ['/polos/bad_bunny/Polo_14A_BB.png', '/polos/bad_bunny/Polo_14B_BB.png'] },
-    { id: 21, artista: 'artista2', nombre: 'Polera Bad Bunny - V17', precio: 60, imagenes: ['/polos/bad_bunny/Polo_15A_BB.png', '/polos/bad_bunny/Polo_15B_BB.png'] },
-    { id: 22, artista: 'artista2', nombre: 'Polera Bad Bunny - V18', precio: 60, imagenes: ['/polos/bad_bunny/Polo_16_BB.png'] },
-    { id: 23, artista: 'artista2', nombre: 'Polera Bad Bunny - V19', precio: 60, imagenes: ['/polos/bad_bunny/Polo_17_BB.png'] },
-    { id: 24, artista: 'artista2', nombre: 'Polera Bad Bunny - V20', precio: 60, imagenes: ['/polos/bad_bunny/Polo_18_BB.png'] },
-    { id: 25, artista: 'artista2', nombre: 'Polera Bad Bunny - V21', precio: 60, imagenes: ['/polos/bad_bunny/Polo_19_BB.png'] },
-    { id: 26, artista: 'artista2', nombre: 'Polera Bad Bunny - V22', precio: 60, imagenes: ['/polos/bad_bunny/Polo_20A_BB.png', '/polos/bad_bunny/Polo_20B_BB.png'] },
-    { id: 27, artista: 'artista2', nombre: 'Polera Bad Bunny - V23', precio: 60, imagenes: ['/polos/bad_bunny/Polo_21_BB.png'] },
-    { id: 28, artista: 'artista2', nombre: 'Polera Bad Bunny - V24', precio: 60, imagenes: ['/polos/bad_bunny/Polo_22_BB.png'] },
-    { id: 29, artista: 'artista2', nombre: 'Polera Bad Bunny - V25', precio: 60, imagenes: ['/polos/bad_bunny/Polo_23_BB.png'] },
-    { id: 30, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V1', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_1a_as.png', '/polos/alejandro_sanz/capucha_1b_as.png'] },
-    { id: 31, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V2', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_2a_as.png', '/polos/alejandro_sanz/capucha_2b_as.png'] },
-    { id: 32, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V3', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_3a_as.png', '/polos/alejandro_sanz/capucha_3b_as.png'] },
-    { id: 33, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V4', precio: 60, imagenes: ['/polos/alejandro_sanz/capucha_4a_as.png', '/polos/alejandro_sanz/capucha_4b_as.png'] },
-    { id: 34, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V5', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_1a_as.png', '/polos/alejandro_sanz/polo_1b_as.png'] },
-    { id: 35, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V6', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_2a_as.png', '/polos/alejandro_sanz/polo_2b_as.png'] },
-    { id: 36, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V7', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_4a_as.png', '/polos/alejandro_sanz/polo_4b_as.png'] },
-    { id: 37, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V8', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_5a_as.png', '/polos/alejandro_sanz/polo_5b_as.png'] },
-    { id: 38, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V9', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_6_as.png'] },
-    { id: 39, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V10', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_7a_as.png', '/polos/alejandro_sanz/polo_7b_as.png'] },
-    { id: 40, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V11', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_8a_as.png', '/polos/alejandro_sanz/polo_8b_as.png'] },
-    { id: 41, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V12', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_9_as.png'] },
-    { id: 42, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V13', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_10a_as.png', '/polos/alejandro_sanz/polo_10b_as.png'] },
-    { id: 43, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V14', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_11_as.png'] },
-    { id: 44, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V15', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_12_as.png'] },
-    { id: 45, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V16', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_13_as.png'] },
-    { id: 46, artista: 'artista3', nombre: 'Polera Alejandro Sanz - V17', precio: 60, imagenes: ['/polos/alejandro_sanz/polo_14_as.png'] }
-  ];
+    // Función para cargar artistas
+    const cargarDatos = async () => {
+      // Usamos cachebuster para evitar que el navegador guarde versiones viejas
+      const cb = "&cb=" + new Date().getTime();
+
+      Papa.parse(LINK_ARTISTAS + cb, {
+        download: true,
+        header: true,
+        complete: (resArtistas) => {
+          setArtistas(resArtistas.data.filter(a => a.id));
+
+          // Una vez cargados artistas, cargamos productos
+          Papa.parse(LINK_PRODUCTOS + cb, {
+            download: true,
+            header: true,
+            complete: (resProductos) => {
+              const transformados = resProductos.data
+                .filter(item => item.id)
+                .map(item => ({
+                  id: parseInt(item.id),
+                  artista: item.artista,
+                  nombre: item.nombre,
+                  precio: parseFloat(item.precio),
+                  imagenes: item.imagen2 && item.imagen2.trim() !== "" 
+                    ? [item.imagen1.trim(), item.imagen2.trim()] 
+                    : [item.imagen1.trim()]
+                }));
+              setProductos(transformados);
+              setCargando(false);
+            }
+          });
+        }
+      });
+    };
+
+    cargarDatos();
+  }, []);
 
   const artistasFiltrados = artistas.filter(art => 
     art.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -90,7 +85,7 @@ export default function Home() {
   };
 
   const toggleVoltear = (id, tieneMultiplesImagenes) => {
-    if (!tieneMultiplesImagenes) return; // Si no tiene 2 imágenes, no hace nada
+    if (!tieneMultiplesImagenes) return;
     setPoloVolteado(poloVolteado === id ? null : id);
   };
 
@@ -101,6 +96,14 @@ export default function Home() {
     const url = `${links.whatsapp}?text=¡Hola! Me gustaría pedir:\n${mensaje}\n\nTotal: S/ ${total}`;
     window.open(url, '_blank');
   };
+
+  if (cargando) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-[10px] uppercase tracking-[0.5em] animate-pulse text-black">Cargando Merch...</p>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white p-6 flex flex-col items-center text-black">
