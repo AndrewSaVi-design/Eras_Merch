@@ -26,7 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     // 1. REEMPLAZA ESTOS DOS LINKS CON TUS LINKS CSV REALES
-    const LINK_ARTISTAS = ""; 
+    const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv"; 
     const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv";
 
     // Función para cargar artistas
