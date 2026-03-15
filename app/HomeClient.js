@@ -14,6 +14,7 @@ export default function HomeClient({ artistas, productos }) {
   const links = {
     instagram: "https://www.instagram.com/eras_merch?igsh=aWY0OHJ3cWlqbmc%3D&utm_source=qr",
     facebook: "https://www.facebook.com/share/1AqEUYkZKL/?mibextid=wwXIfr",
+    tiktok: "https://www.tiktok.com/@erasmerch?_r=1&_t=ZS-93TklyrCIhp",
     whatsapp: "https://wa.me/message/VBDNL4S6LVXTP1"
   };
 
@@ -49,6 +50,7 @@ export default function HomeClient({ artistas, productos }) {
 
   return (
     <main className="min-h-screen bg-white p-6 flex flex-col items-center text-black">
+      {/* --- CABECERA --- */}
       <div className="flex flex-col items-center mb-8 w-full max-w-4xl relative">
         <div className="absolute right-0 top-0">
           <div className="relative cursor-pointer p-2" onClick={() => setCarritoAbierto(true)}>
@@ -62,12 +64,20 @@ export default function HomeClient({ artistas, productos }) {
         </div>
         <img src="/erasmerch.jpeg" alt="Logo" className="w-40 h-auto mb-4" />
         <h1 className="text-xl font-serif tracking-[0.4em] mb-6 uppercase">ERAS MERCH</h1>
+        
+        {/* REDES SOCIALES (TikTok recuperado) */}
         <div className="flex gap-8 text-gray-400">
           <a href={links.instagram} target="_blank" className="hover:text-black transition-colors"><Instagram size={22} /></a>
           <a href={links.facebook} target="_blank" className="hover:text-black transition-colors"><Facebook size={22} /></a>
+          <a href={links.tiktok} target="_blank" className="hover:text-black transition-colors">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.44-4.13-1.19-.29-.17-.57-.38-.82-.61-.01 2.45.01 4.89 0 7.34-.02 2.1-.53 4.25-1.95 5.82-1.41 1.6-3.6 2.39-5.67 2.39-2.07 0-4.25-.79-5.67-2.39-1.42-1.57-1.93-3.72-1.95-5.82-.02-2.1.49-4.25 1.91-5.82 1.4-1.6 3.58-2.39 5.65-2.39.26 0 .52.01.78.03v4.02c-.26-.02-.52-.03-.78-.03-1.4 0-2.87.54-3.83 1.57-.96 1.05-1.3 2.51-1.28 3.94.02 1.43.37 2.89 1.33 3.94.96 1.03 2.43 1.57 3.83 1.57s2.87-.54 3.83-1.57c.96-1.05 1.3-2.51 1.28-3.94V0z"/>
+            </svg>
+          </a>
         </div>
       </div>
 
+      {/* --- BUSCADOR --- */}
       {vista === 'colecciones' && (
         <div className="w-full max-w-md mb-12 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
@@ -81,6 +91,7 @@ export default function HomeClient({ artistas, productos }) {
         </div>
       )}
 
+      {/* --- PANEL DEL CARRITO --- */}
       {carritoAbierto && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setCarritoAbierto(false)} />
@@ -122,6 +133,7 @@ export default function HomeClient({ artistas, productos }) {
         </div>
       )}
 
+      {/* --- VISTA: COLECCIONES --- */}
       {vista === 'colecciones' && (
         <div className="w-full max-w-4xl">
           <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-8 pb-8 no-scrollbar">
@@ -137,6 +149,7 @@ export default function HomeClient({ artistas, productos }) {
         </div>
       )}
 
+      {/* --- VISTA: PRODUCTOS --- */}
       {vista === 'productos' && (
         <div className="w-full max-w-6xl">
           <button onClick={() => setVista('colecciones')} className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold mb-12">
@@ -172,6 +185,17 @@ export default function HomeClient({ artistas, productos }) {
           </div>
         </div>
       )}
+
+      {/* WHATSAPP FLOTANTE (Recuperado) */}
+      <a 
+        href={links.whatsapp} 
+        target="_blank"
+        className="fixed bottom-8 right-8 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:scale-110 active:scale-90 transition-all z-[90] flex items-center justify-center"
+      >
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.067 2.877 1.215 3.076.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
     </main>
   );
 }
