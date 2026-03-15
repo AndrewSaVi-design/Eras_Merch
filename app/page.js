@@ -1,9 +1,53 @@
-'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Papa from 'papaparse';
-import { Instagram, Facebook, ArrowLeft, ShoppingBag, X, Trash2, Check, Search, RefreshCw } from 'lucide-react';
+import { Instagram, Facebook, ArrowLeft, ShoppingBag, X, Trash2, Search, RefreshCw } from 'lucide-react';
 
-export default function Home() {
+// 1. ESTA FUNCIÓN SE EJECUTA EN EL SERVIDOR (SSG)
+export async function getStaticProps() {
+  const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv";
+  const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv";
+
+  // Función auxiliar para descargar CSV
+  const fetchCSV = async (url) => {
+    const res = await fetch(url);
+    const text = await res.text();
+    return new Promise((resolve) => {
+      Papa.parse(text, {
+        header: true,
+        complete: (results) => resolve(results.data),
+      });
+    });
+  };
+
+  try {
+    const rawArtistas = await fetchCSV(LINK_ARTISTAS);
+    const rawProductos = await fetchCSV(LINK_PRODUCTOS);
+
+    const artistas = rawArtistas.filter(a => a.id);
+    const productos = rawProductos
+      .filter(item => item.id)
+      .map(item => ({
+        id: parseInt(item.id),
+        artista: item.artista,
+        nombre: item.nombre,
+        precio: parseFloat(item.precio),
+        imagenes: item.imagen2 && item.imagen2.trim() !== "" 
+          ? [item.imagen1.trim(), item.imagen2.trim()] 
+          : [item.imagen1.trim()]
+      }));
+
+    return {
+      props: { artistas, productos },
+      // ISR: Se actualiza en segundo plano cada 60 segundos si hay cambios en el Excel
+      revalidate: 60, 
+    };
+  } catch (error) {
+    return { props: { artistas: [], productos: [] } };
+  }
+}
+
+// 2. EL COMPONENTE PRINCIPAL RECIBE LOS DATOS YA LISTOS
+export default function Home({ artistas, productos }) {
   const [vista, setVista] = useState('colecciones'); 
   const [artistaId, setArtistaId] = useState(null);
   const [carrito, setCarrito] = useState([]);
@@ -12,11 +56,6 @@ export default function Home() {
   const [busqueda, setBusqueda] = useState('');
   const [poloVolteado, setPoloVolteado] = useState(null);
 
-  // ESTADOS DINÁMICOS
-  const [artistas, setArtistas] = useState([]);
-  const [productos, setProductos] = useState([]);
-  const [cargando, setCargando] = useState(true);
-
   const links = {
     instagram: "https://www.instagram.com/eras_merch?igsh=aWY0OHJ3cWlqbmc%3D&utm_source=qr",
     facebook: "https://www.facebook.com/share/1AqEUYkZKL/?mibextid=wwXIfr",
@@ -24,53 +63,14 @@ export default function Home() {
     whatsapp: "https://wa.me/message/VBDNL4S6LVXTP1"
   };
 
-  useEffect(() => {
-    const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv"; 
-    const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?output=csv";
-
-    const cargarDatos = async () => {
-      const cb = "&cb=" + new Date().getTime();
-
-      Papa.parse(LINK_ARTISTAS + cb, {
-        download: true,
-        header: true,
-        complete: (resArtistas) => {
-          setArtistas(resArtistas.data.filter(a => a.id));
-
-          Papa.parse(LINK_PRODUCTOS + cb, {
-            download: true,
-            header: true,
-            complete: (resProductos) => {
-              const transformados = resProductos.data
-                .filter(item => item.id)
-                .map(item => ({
-                  id: parseInt(item.id),
-                  artista: item.artista,
-                  nombre: item.nombre,
-                  precio: parseFloat(item.precio),
-                  imagenes: item.imagen2 && item.imagen2.trim() !== "" 
-                    ? [item.imagen1.trim(), item.imagen2.trim()] 
-                    : [item.imagen1.trim()]
-                }));
-              setProductos(transformados);
-              setCargando(false);
-            },
-            error: () => setCargando(false)
-          });
-        },
-        error: () => setCargando(false)
-      });
-    };
-
-    cargarDatos();
-  }, []);
-
+  // Filtros de búsqueda (ahora instantáneos)
   const artistasFiltrados = (artistas || []).filter(art => 
     art?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   const polosAMostrar = productos.filter(p => p.artista === artistaId);
 
+  // Funciones de Carrito
   const agregarAlCarrito = (e, producto) => {
     e.stopPropagation();
     setCarrito([...carrito, producto]);
@@ -95,14 +95,6 @@ export default function Home() {
     window.open(url, '_blank');
   };
 
-  if (cargando) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-[10px] uppercase tracking-[0.5em] animate-pulse text-black">Cargando Merch...</p>
-      </div>
-    );
-  }
-
   return (
     <main className="min-h-screen bg-white p-6 flex flex-col items-center text-black">
       
@@ -125,9 +117,9 @@ export default function Home() {
           <a href={links.instagram} target="_blank" className="hover:text-black transition-colors"><Instagram size={22} /></a>
           <a href={links.facebook} target="_blank" className="hover:text-black transition-colors"><Facebook size={22} /></a>
           <a href={links.tiktok} target="_blank" className="hover:text-black transition-colors">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.44-4.13-1.19-.29-.17-.57-.38-.82-.61-.01 2.45.01 4.89 0 7.34-.02 2.1-.53 4.25-1.95 5.82-1.41 1.6-3.6 2.39-5.67 2.39-2.07 0-4.25-.79-5.67-2.39-1.42-1.57-1.93-3.72-1.95-5.82-.02-2.1.49-4.25 1.91-5.82 1.4-1.6 3.58-2.39 5.65-2.39.26 0 .52.01.78.03v4.02c-.26-.02-.52-.03-.78-.03-1.4 0-2.87.54-3.83 1.57-.96 1.05-1.3 2.51-1.28 3.94.02 1.43.37 2.89 1.33 3.94.96 1.03 2.43 1.57 3.83 1.57s2.87-.54 3.83-1.57c.96-1.05 1.3-2.51 1.28-3.94V0z"/>
-            </svg>
+             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+               <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.06-2.89-.44-4.13-1.19-.29-.17-.57-.38-.82-.61-.01 2.45.01 4.89 0 7.34-.02 2.1-.53 4.25-1.95 5.82-1.41 1.6-3.6 2.39-5.67 2.39-2.07 0-4.25-.79-5.67-2.39-1.42-1.57-1.93-3.72-1.95-5.82-.02-2.1.49-4.25 1.91-5.82 1.4-1.6 3.58-2.39 5.65-2.39.26 0 .52.01.78.03v4.02c-.26-.02-.52-.03-.78-.03-1.4 0-2.87.54-3.83 1.57-.96 1.05-1.3 2.51-1.28 3.94.02 1.43.37 2.89 1.33 3.94.96 1.03 2.43 1.57 3.83 1.57s2.87-.54 3.83-1.57c.96-1.05 1.3-2.51 1.28-3.94V0z"/>
+             </svg>
           </a>
         </div>
       </div>
