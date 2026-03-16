@@ -2,8 +2,8 @@ import Papa from 'papaparse';
 import HomeClient from './HomeClient';
 
 async function getDatos() {
-  const LINK_ARTISTAS = "TU_URL_DE_ARTISTAS_CSV";
-  const LINK_PRODUCTOS = "TU_URL_DE_PRODUCTOS_CSV";
+  const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv";
+  const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=0&single=true&output=csv";
 
   const [resArt, resProd] = await Promise.all([
     fetch(LINK_ARTISTAS, { next: { revalidate: 60 } }),
