@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
-import { Instagram, Facebook, ArrowLeft, ShoppingBag, X, Trash2, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Instagram, Facebook, ArrowLeft, ShoppingBag, X, Trash2, Search, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 
-export default function HomeClient({ artistas, productos }) {
+export default function HomeClient({ artistas, productos, banners }) {
   const [vista, setVista] = useState('colecciones'); 
   const [artistaId, setArtistaId] = useState(null);
   const [carrito, setCarrito] = useState([]);
@@ -10,6 +10,9 @@ export default function HomeClient({ artistas, productos }) {
   const [notificacion, setNotificacion] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [tallaSeleccionada, setTallaSeleccionada] = useState({});
+  
+  // ESTADO PARA EL CARRUSEL
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const WHATSAPP_NUMBER = "51906618846"; 
 
@@ -18,6 +21,16 @@ export default function HomeClient({ artistas, productos }) {
     facebook: "https://www.facebook.com/share/1AqEUYkZKL/?mibextid=wwXIfr",
     tiktok: "https://www.tiktok.com/@erasmerch?_r=1&_t=ZS-93TklyrCIhp"
   };
+
+  // LÓGICA DE AUTODESLIZADO
+  useEffect(() => {
+    if (banners && banners.length > 0 && vista === 'colecciones') {
+      const timer = setInterval(() => {
+        setCurrentBanner((prev) => (prev + 1) % banners.length);
+      }, 4000);
+      return () => clearInterval(timer);
+    }
+  }, [banners, vista]);
 
   const artistasFiltrados = (artistas || []).filter(art => 
     art?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
@@ -33,40 +46,46 @@ export default function HomeClient({ artistas, productos }) {
     }
     const item = { 
       ...producto, 
-      tallaElegida: tallaSeleccionada[producto.id] || null,
-      tempId: Date.now() + Math.random() // ID único para eliminar el correcto
+      tallaElegida: tallaSeleccionada[producto.id] || null, 
+      tempId: Date.now() + Math.random() 
     };
     setCarrito([...carrito, item]);
     setNotificacion(producto.id);
     setTimeout(() => setNotificacion(null), 2000);
   };
 
-  const eliminarDelCarrito = (tempId) => {
-    setCarrito(carrito.filter(item => item.tempId !== tempId));
-  };
-
   const enviarWhatsApp = () => {
+    if (carrito.length === 0) {
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=¡Hola! Tengo una consulta sobre los productos de Eras Merch.`, '_blank');
+      return;
+    }
     const lista = carrito.map(p => `• ${p.nombre} ${p.tallaElegida ? `(Talla: ${p.tallaElegida})` : ''} - S/ ${p.precio}`).join('%0A');
     const total = carrito.reduce((sum, item) => sum + item.precio, 0);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=¡Hola! Mi pedido:%0A%0A${lista}%0A%0A*Total: S/ ${total}*`, '_blank');
   };
 
   return (
-    <main className="min-h-screen bg-white p-6 flex flex-col items-center text-black">
+    <main className="min-h-screen bg-white p-6 flex flex-col items-center text-black relative">
+      
+      {/* BOTÓN WHATSAPP FLOTANTE */}
+      <button 
+        onClick={() => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank')}
+        className="fixed bottom-6 right-6 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-90 flex items-center justify-center"
+      >
+        <MessageCircle size={28} fill="white" />
+      </button>
+
       {/* CABECERA */}
       <div className="w-full max-w-4xl flex flex-col items-center mb-8 relative">
         <div className="absolute right-0 top-0 cursor-pointer p-2" onClick={() => setCarritoAbierto(true)}>
           <ShoppingBag size={24} />
           {carrito.length > 0 && (
-            <span className="absolute top-0 right-0 bg-black text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-              {carrito.length}
-            </span>
+            <span className="absolute top-0 right-0 bg-black text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{carrito.length}</span>
           )}
         </div>
         <img src="/erasmerch.jpeg" className="w-32 h-auto mb-4" />
         <h1 className="text-xl font-serif tracking-[0.4em] mb-6 uppercase text-center">ERAS MERCH</h1>
         
-        {/* REDES SOCIALES */}
         <div className="flex gap-6 text-gray-400 mb-4">
           <a href={links.instagram} target="_blank" className="hover:text-black transition-colors"><Instagram size={20} /></a>
           <a href={links.facebook} target="_blank" className="hover:text-black transition-colors"><Facebook size={20} /></a>
@@ -78,10 +97,32 @@ export default function HomeClient({ artistas, productos }) {
         </div>
       </div>
 
+      {/* CARRUSEL DE BANNERS */}
+      {vista === 'colecciones' && banners && banners.length > 0 && (
+        <div className="w-full max-w-4xl mb-12 relative px-4 group">
+          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl shadow-lg bg-gray-100 border border-gray-100">
+            {banners.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentBanner ? 'opacity-100' : 'opacity-0'}`}
+              />
+            ))}
+            <button onClick={() => setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length)} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/50 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><ChevronLeft size={20} /></button>
+            <button onClick={() => setCurrentBanner((prev) => (prev + 1) % banners.length)} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/50 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><ChevronRight size={20} /></button>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {banners.map((_, i) => (
+                <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentBanner ? 'bg-black w-4' : 'bg-black/20'}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* VISTA COLECCIONES */}
       {vista === 'colecciones' && (
         <>
-          <div className="w-full max-w-md mb-12 relative px-4">
+          <div className="w-full max-w-md mb-12 relative px-4 text-black">
             <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
             <input 
               type="text" placeholder="BUSCAR ARTISTA..." value={busqueda}
@@ -117,27 +158,14 @@ export default function HomeClient({ artistas, productos }) {
                 </div>
                 <h3 className="text-[10px] font-bold uppercase text-center h-10 flex items-center px-2">{polo.nombre}</h3>
                 <p className="text-[11px] text-gray-400 mb-4 font-serif italic font-bold">S/ {polo.precio}</p>
-                
                 {polo.tallas?.length > 0 && (
                   <div className="flex gap-2 mb-5">
                     {polo.tallas.map(t => (
-                      <button 
-                        key={t} 
-                        onClick={() => setTallaSeleccionada({...tallaSeleccionada, [polo.id]: t})} 
-                        className={`w-8 h-8 text-[9px] font-bold rounded-full border transition-all ${tallaSeleccionada[polo.id] === t ? 'bg-black text-white border-black' : 'text-gray-400 border-gray-100 hover:border-gray-300'}`}
-                      >
-                        {t}
-                      </button>
+                      <button key={t} onClick={() => setTallaSeleccionada({...tallaSeleccionada, [polo.id]: t})} className={`w-8 h-8 text-[9px] font-bold rounded-full border transition-all ${tallaSeleccionada[polo.id] === t ? 'bg-black text-white border-black' : 'text-gray-400 border-gray-100 hover:border-gray-300'}`}>{t}</button>
                     ))}
                   </div>
                 )}
-
-                <button 
-                  onClick={() => agregarAlCarrito(polo)} 
-                  className={`w-full py-3 text-[10px] font-bold uppercase rounded-xl border tracking-widest transition-all ${notificacion === polo.id ? 'bg-green-500 border-green-500 text-white' : 'border-black hover:bg-black hover:text-white'}`}
-                >
-                  {notificacion === polo.id ? 'AÑADIDO' : 'AÑADIR'}
-                </button>
+                <button onClick={() => agregarAlCarrito(polo)} className={`w-full py-3 text-[10px] font-bold uppercase rounded-xl border tracking-widest transition-all ${notificacion === polo.id ? 'bg-green-500 border-green-500 text-white' : 'border-black hover:bg-black hover:text-white'}`}>{notificacion === polo.id ? 'AÑADIDO' : 'AÑADIR'}</button>
               </div>
             ))}
           </div>
@@ -164,13 +192,7 @@ export default function HomeClient({ artistas, productos }) {
                       <p className="text-[10px] font-bold uppercase">{item.nombre} {item.tallaElegida && `(${item.tallaElegida})`}</p>
                       <p className="text-[10px] text-gray-400 mt-1">S/ {item.precio}</p>
                     </div>
-                    {/* BOTÓN DE ELIMINAR RECUPERADO */}
-                    <button 
-                      onClick={() => eliminarDelCarrito(item.tempId)} 
-                      className="text-gray-300 hover:text-red-500 transition-colors p-2"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                    <button onClick={() => setCarrito(carrito.filter(c => c.tempId !== item.tempId))} className="text-gray-300 hover:text-red-500 p-2"><Trash2 size={18} /></button>
                   </div>
                 ))
               )}
@@ -181,9 +203,7 @@ export default function HomeClient({ artistas, productos }) {
                    <span className="text-[10px] font-bold uppercase tracking-widest">Total Estimado</span>
                    <span className="text-sm font-black">S/ {carrito.reduce((sum, item) => sum + item.precio, 0)}</span>
                 </div>
-                <button onClick={enviarWhatsApp} className="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gray-900 transition-colors">
-                  PEDIR POR WHATSAPP
-                </button>
+                <button onClick={enviarWhatsApp} className="w-full bg-black text-white py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gray-900 transition-colors">PEDIR POR WHATSAPP</button>
               </div>
             )}
           </div>
