@@ -4,7 +4,6 @@ import HomeClient from './HomeClient';
 async function getDatos() {
   const LINK_ARTISTAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1184641699&single=true&output=csv";
   const LINK_PRODUCTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=0&single=true&output=csv";
-  // NUEVO LINK DE BANNERS
   const LINK_BANNERS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1606536173&single=true&output=csv";
 
   const [resArt, resProd, resBan] = await Promise.all([
@@ -17,9 +16,15 @@ async function getDatos() {
   const textProd = await resProd.text();
   const textBan = await resBan.text();
 
-  const artistas = Papa.parse(textArt, { header: true }).data.filter(a => a.id);
+  // Aquí leemos la nueva columna d (fotoBackground)
+  const artistas = Papa.parse(textArt, { header: true }).data
+    .filter(a => a.id)
+    .map(a => ({
+      ...a,
+      fotoBackground: a.fotoBackground?.trim() || ''
+    }));
+
   const productosRaw = Papa.parse(textProd, { header: true }).data.filter(p => p.id);
-  // PROCESAR BANNERS
   const banners = Papa.parse(textBan, { header: true }).data.filter(b => b.url).map(b => b.url);
 
   const productos = productosRaw.map(item => ({
