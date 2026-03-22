@@ -16,13 +16,16 @@ async function getDatos() {
   const textProd = await resProd.text();
   const textBan = await resBan.text();
 
-  // Aquí leemos la nueva columna d (fotoBackground)
-  const artistas = Papa.parse(textArt, { header: true }).data
-    .filter(a => a.id)
-    .map(a => ({
-      ...a,
-      fotoBackground: a.fotoBackground?.trim() || ''
-    }));
+  // Procesamos Artistas, incluyendo la columna fotoBackground
+  const artistasRaw = Papa.parse(textArt, { header: true }).data.filter(a => a.id);
+  
+  const artistas = artistasRaw.map(a => ({
+    id: a.id,
+    nombre: a.nombre,
+    foto: a.foto?.trim() || '',
+    // Aseguramos que lea 'fotoBackground' o use una por defecto
+    fotoBackground: a.fotoBackground?.trim() || '' 
+  }));
 
   const productosRaw = Papa.parse(textProd, { header: true }).data.filter(p => p.id);
   const banners = Papa.parse(textBan, { header: true }).data.filter(b => b.url).map(b => b.url);
