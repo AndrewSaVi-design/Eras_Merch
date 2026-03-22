@@ -7,24 +7,21 @@ async function getDatos() {
   const LINK_BANNERS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRn4eg2QNYNlyJbafWuOq5WN1MXhc0YwKQgI9jn8sKxilxH1Vx8D6xj3wVG6-XdWgW6-i_zuItIcrCY/pub?gid=1606536173&single=true&output=csv";
 
   const [resArt, resProd, resBan] = await Promise.all([
-    fetch(LINK_ARTISTAS, { next: { revalidate: 60 } }),
-    fetch(LINK_PRODUCTOS, { next: { revalidate: 60 } }),
-    fetch(LINK_BANNERS, { next: { revalidate: 60 } })
+    fetch(LINK_ARTISTAS, { next: { revalidate: 0 } }), // Revalidación 0 para pruebas
+    fetch(LINK_PRODUCTOS, { next: { revalidate: 0 } }),
+    fetch(LINK_BANNERS, { next: { revalidate: 0 } })
   ]);
 
   const textArt = await resArt.text();
   const textProd = await resProd.text();
   const textBan = await resBan.text();
 
-  // Procesamos Artistas, incluyendo la columna fotoBackground
   const artistasRaw = Papa.parse(textArt, { header: true }).data.filter(a => a.id);
-  
   const artistas = artistasRaw.map(a => ({
     id: a.id,
     nombre: a.nombre,
     foto: a.foto?.trim() || '',
-    // Aseguramos que lea 'fotoBackground' o use una por defecto
-    fotoBackground: a.fotoBackground?.trim() || '' 
+    fotoBackground: a.fotoBackground?.trim() || '' // Mapeo directo de la columna D
   }));
 
   const productosRaw = Papa.parse(textProd, { header: true }).data.filter(p => p.id);
