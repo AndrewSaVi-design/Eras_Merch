@@ -4,8 +4,7 @@ import HomeClient from './HomeClient';
 async function fetchCSV(url) {
   const res = await fetch(`${url}&cache_bust=${Date.now()}`, { cache: 'no-store' });
   const text = await res.text();
-  // Leemos sin encabezados para evitar errores de nombres
-  return Papa.parse(text, { header: false }).data;
+  return Papa.parse(text, { header: false }).data; // Leemos por posición de columna
 }
 
 export default async function Page() {
@@ -22,14 +21,12 @@ export default async function Page() {
       fetchCSV(LINK_CONFIG)
     ]);
 
-    // Mapeo Artistas (Col 0: ID, Col 1: Nombre, Col 2: Foto)
     const artistas = artRaw.slice(1).filter(r => r[0]).map(r => ({
       id: r[0].trim().toLowerCase(),
       nombre: r[1],
       foto: r[2]
     }));
 
-    // Mapeo Fondos (Col 0: ID, Col 1: URL)
     const fondosMap = {};
     confRaw.slice(1).forEach(r => {
       if (r[0] && r[1]) fondosMap[r[0].trim().toLowerCase()] = r[1].trim();
@@ -41,13 +38,14 @@ export default async function Page() {
       id: r[0],
       artista: r[1]?.trim().toLowerCase(),
       nombre: r[2],
-      precio: r[3],
-      tallas: r[4] ? r[4].split(',').map(t => t.trim()) : [],
+      // CORRECCIÓN AQUÍ: r[3] es Tallas y r[4] es Precio
+      tallas: r[3] ? r[3].split(',').map(t => t.trim()) : [],
+      precio: parseFloat(r[4]) || 0,
       imagenes: r[6]?.trim() ? [r[5].trim(), r[6].trim()] : [r[5].trim()]
     }));
 
     return <HomeClient artistas={artistas} productos={productos} banners={banners} fondosMap={fondosMap} />;
   } catch (e) {
-    return <div className="p-20 text-center">Cargando tienda...</div>;
+    return <div className="p-20 text-center font-bold">Cargando Eras Merch...</div>;
   }
 }
