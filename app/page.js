@@ -2,9 +2,8 @@ import Papa from 'papaparse';
 import HomeClient from './HomeClient';
 
 async function fetchCSV(url) {
-  // Añadimos un "timestamp" para que Vercel no use datos guardados viejos
-  const antiCacheUrl = `${url}&t=${Date.now()}`;
-  const res = await fetch(antiCacheUrl, { cache: 'no-store' });
+  // Forzamos a Google a darnos la versión más nueva cada vez
+  const res = await fetch(`${url}&cache_bust=${Date.now()}`, { cache: 'no-store' });
   const text = await res.text();
   return Papa.parse(text, { header: true }).data;
 }
@@ -26,26 +25,26 @@ export default async function Page() {
     const artistas = artistasRaw.filter(a => a.id?.trim());
     const banners = bannersRaw.filter(b => b.url?.trim()).map(b => b.url.trim());
     
+    // Mapeo ultra-limpio de fondos
     const fondosMap = {};
     configRaw.forEach(c => {
-      if (c.id?.trim() && c.fotoBackground?.trim()) {
-        fondosMap[c.id.trim().toLowerCase()] = c.fotoBackground.trim();
+      const idKey = c.id?.toString().trim().toLowerCase();
+      if (idKey && c.fotoBackground) {
+        fondosMap[idKey] = c.fotoBackground.trim();
       }
     });
 
-    const productos = productosRaw
-      .filter(p => p.id?.trim())
-      .map(item => ({
-        id: item.id.trim(),
-        artista: item.artista?.trim().toLowerCase(),
-        nombre: item.nombre?.trim(),
-        precio: item.precio,
-        tallas: item.tallas ? item.tallas.split(',').map(t => t.trim()) : [],
-        imagenes: item.imagen2?.trim() ? [item.imagen1.trim(), item.imagen2.trim()] : [item.imagen1.trim()]
-      }));
+    const productos = productosRaw.map(item => ({
+      id: item.id,
+      artista: item.artista?.trim().toLowerCase(),
+      nombre: item.nombre?.trim(),
+      precio: item.precio,
+      tallas: item.tallas ? item.tallas.split(',').map(t => t.trim()) : [],
+      imagenes: item.imagen2?.trim() ? [item.imagen1.trim(), item.imagen2.trim()] : [item.imagen1.trim()]
+    }));
 
     return <HomeClient artistas={artistas} productos={productos} banners={banners} fondosMap={fondosMap} />;
   } catch (e) {
-    return <div className="p-10 text-center">Error cargando la tienda. Revisa la conexión.</div>;
+    return <div className="p-20 text-center font-bold">Error de conexión con Google Sheets. Refresca la página.</div>;
   }
 }
