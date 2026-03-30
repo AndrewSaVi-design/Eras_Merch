@@ -16,6 +16,7 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
   const [busqueda, setBusqueda] = useState('');
   const [tallaSeleccionada, setTallaSeleccionada] = useState({});
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [showBack, setShowBack] = useState({}); // Para controlar qué polo muestra la espalda
   
   const artistasRef = useRef(null);
   const WHATSAPP_NUMBER = "51906618846"; 
@@ -31,15 +32,19 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
   const polosAMostrar = productos.filter(p => p.artista === artistaId);
   const urlFondo = artistaId ? fondosMap[artistaId] : null;
 
+  const toggleCara = (id) => {
+    setShowBack(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <main className="min-h-screen bg-white flex flex-col items-center text-black relative font-sans overflow-x-hidden">
       
       {/* WA FLOTANTE */}
-      <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="fixed bottom-6 right-6 z-[99]">
+      <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="fixed bottom-6 right-6 z-[99] active:scale-95 transition-transform">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-14 h-14 shadow-xl" alt="WA" />
       </a>
 
-      {/* CABECERA: Solo se muestra en 'colecciones' */}
+      {/* CABECERA */}
       <div className={`w-full max-w-4xl p-6 flex flex-col items-center relative z-20 ${vista === 'productos' ? 'hidden' : 'flex'}`}>
         <div className="absolute right-6 top-8 cursor-pointer" onClick={() => setCarritoAbierto(true)}>
           <ShoppingBag size={26} className="text-black" />
@@ -48,23 +53,32 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
         <img src="/erasmerch.jpeg" className="w-24 mb-4" />
         <p className="text-[12px] font-black tracking-[0.4em] mb-4 uppercase">ERAS MERCH</p>
         <div className="flex gap-6 text-gray-400">
-          <a href="https://www.instagram.com/eras_merch" target="_blank" className="hover:text-black transition-colors"><Instagram size={20} /></a>
-          <a href="https://www.facebook.com/share/1AqEUYkZKL/" target="_blank" className="hover:text-black transition-colors"><Facebook size={20} /></a>
-          <a href="https://www.tiktok.com/@erasmerch" target="_blank" className="hover:text-black transition-colors"><TikTokIcon size={20} /></a>
+          <a href="https://www.instagram.com/eras_merch" target="_blank"><Instagram size={20} /></a>
+          <a href="https://www.facebook.com/share/1AqEUYkZKL/" target="_blank"><Facebook size={20} /></a>
+          <a href="https://www.tiktok.com/@erasmerch" target="_blank"><TikTokIcon size={20} /></a>
         </div>
       </div>
 
       {vista === 'colecciones' && (
         <div className="w-full flex flex-col items-center px-4 animate-in fade-in z-20">
-          {/* BANNER CON FLECHAS */}
+          {/* BANNER TÁCTIL */}
           {banners?.length > 0 && (
-            <div className="w-full max-w-5xl mb-10 group relative">
+            <div className="w-full max-w-5xl mb-10 group relative touch-pan-x">
               <div className="relative aspect-[16/11] md:aspect-[21/9] w-full overflow-hidden rounded-[2.5rem] shadow-xl bg-gray-50 border">
                 {banners.map((url, i) => (
                   <img key={url} src={url} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === currentBanner ? 'opacity-100' : 'opacity-0'}`} />
                 ))}
-                <button onClick={() => setCurrentBanner(p => (p - 1 + banners.length) % banners.length)} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/60 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all z-20 hover:bg-white"><ChevronLeft size={28} /></button>
-                <button onClick={() => setCurrentBanner(p => (p + 1) % banners.length)} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/60 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all z-20 hover:bg-white"><ChevronRight size={28} /></button>
+                
+                {/* Flechas visibles siempre en móvil para guiar */}
+                <button onClick={() => setCurrentBanner(p => (p - 1 + banners.length) % banners.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-md p-2 rounded-full z-20"><ChevronLeft size={24} /></button>
+                <button onClick={() => setCurrentBanner(p => (p + 1) % banners.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-sm p-2 rounded-full z-20"><ChevronRight size={24} /></button>
+
+                {/* Indicadores de posición */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  {banners.map((_, i) => (
+                    <div key={i} className={`h-1.5 rounded-full transition-all ${i === currentBanner ? 'bg-white w-6' : 'bg-white/40 w-1.5'}`} />
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -75,16 +89,16 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
               <input type="text" placeholder="BUSCAR ARTISTA..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} className="w-full bg-gray-50 border-none rounded-2xl py-4 px-12 text-xs font-bold text-black focus:ring-1 focus:ring-black"/>
             </div>
-            <button onClick={() => artistasRef.current?.scrollIntoView({ behavior: 'smooth' })} className="bg-black text-white px-8 py-4 rounded-2xl text-[10px] font-black tracking-widest uppercase hover:bg-gray-800">Ver Artistas</button>
+            <button onClick={() => artistasRef.current?.scrollIntoView({ behavior: 'smooth' })} className="bg-black text-white px-8 py-4 rounded-2xl text-[10px] font-black tracking-widest uppercase active:scale-95 transition-all">Ver Artistas</button>
           </div>
 
-          <div ref={artistasRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-5xl mb-20">
+          <div ref={artistasRef} className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mb-20">
             {artistas.filter(a => a.nombre.toLowerCase().includes(busqueda.toLowerCase())).map(art => (
               <div key={art.id} onClick={() => { setArtistaId(art.id); setVista('productos'); window.scrollTo(0,0); }} className="cursor-pointer group flex flex-col items-center">
-                <div className="aspect-square w-full rounded-[2.5rem] overflow-hidden shadow-sm hover:scale-105 transition-all border border-gray-100">
+                <div className="aspect-square w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 active:scale-95 transition-all">
                   <img src={art.foto} className="w-full h-full object-cover" />
                 </div>
-                <p className="mt-4 text-[10px] font-black tracking-widest uppercase">{art.nombre}</p>
+                <p className="mt-3 text-[9px] font-black tracking-widest uppercase text-center">{art.nombre}</p>
               </div>
             ))}
           </div>
@@ -93,49 +107,61 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
 
       {vista === 'productos' && artistaActual && (
         <div className="w-full min-h-screen relative flex flex-col items-center animate-in fade-in">
-          
-          {/* FONDO NÍTIDO */}
-          {urlFondo ? (
-             <div 
-               className="fixed inset-0 z-0 bg-cover bg-center transition-all duration-1000 opacity-90"
+          {urlFondo && (
+             <div className="fixed inset-0 z-0 bg-cover bg-center transition-all duration-1000 opacity-90"
                style={{ backgroundImage: `url(${urlFondo})`, filter: 'brightness(0.9)' }}
              />
-          ) : (
-            <div className="fixed inset-0 z-[-1] bg-gray-50" />
           )}
           
-          <div className="w-full max-w-6xl p-6 mt-10 relative z-10">
-            {/* BARRA DE NAVEGACIÓN ARTISTA */}
+          <div className="w-full max-w-6xl p-4 mt-10 relative z-10">
             <div className="w-full flex justify-between items-center mb-10 text-white">
-               <button onClick={() => setVista('colecciones')} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase hover:text-white/80 transition-colors drop-shadow-md">
+               <button onClick={() => setVista('colecciones')} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
                    <ArrowLeft size={16} /> Volver
                </button>
-               <div className="relative cursor-pointer" onClick={() => setCarritoAbierto(true)}>
-                  <ShoppingBag size={26} className="text-white drop-shadow-md" />
-                  {carrito.length > 0 && <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">{carrito.length}</span>}
+               <div className="relative p-2 bg-black/20 backdrop-blur-md rounded-full border border-white/20" onClick={() => setCarritoAbierto(true)}>
+                  <ShoppingBag size={24} className="text-white" />
+                  {carrito.length > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-bold border border-white/20">{carrito.length}</span>}
                 </div>
             </div>
 
-            <h2 className="text-4xl md:text-6xl font-black text-center mb-16 uppercase italic tracking-tighter text-white drop-shadow-xl">{artistaActual.nombre}</h2>
+            <h2 className="text-3xl md:text-6xl font-black text-center mb-12 uppercase italic tracking-tighter text-white drop-shadow-xl">{artistaActual.nombre}</h2>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-black relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-black relative z-10">
               {polosAMostrar.map(polo => (
-                <div key={polo.id} className="bg-white/95 border border-gray-100 p-4 rounded-[2rem] flex flex-col items-center shadow-xl hover:-translate-y-2 transition-transform">
-                  <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden mb-4 border border-gray-50"><img src={polo.imagenes[0]} className="w-full h-full object-cover" /></div>
-                  <h3 className="text-black text-[10px] font-bold uppercase text-center mb-1 h-8 flex items-center px-2">{polo.nombre}</h3>
+                <div key={polo.id} className="bg-white/95 border border-gray-100 p-3 rounded-[2rem] flex flex-col items-center shadow-lg active:shadow-sm transition-all">
                   
-                  {/* PRECIO CORRECTO */}
-                  <p className="text-black text-[18px] font-black mb-4 tracking-widest">S/ {polo.precio}</p>
+                  {/* IMAGEN TOQUE-INTUITIVO (Toca para cambiar de cara) */}
+                  <div 
+                    onClick={() => polo.imagenes[1] && toggleCara(polo.id)}
+                    className="aspect-[3/4] w-full rounded-2xl overflow-hidden mb-3 border border-gray-50 relative cursor-pointer"
+                  >
+                    <img 
+                      src={polo.imagenes[0]} 
+                      className={`w-full h-full object-cover transition-opacity duration-500 ${showBack[polo.id] ? 'opacity-0' : 'opacity-100'}`} 
+                    />
+                    {polo.imagenes[1] && (
+                      <img 
+                        src={polo.imagenes[1]} 
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${showBack[polo.id] ? 'opacity-100' : 'opacity-0'}`} 
+                      />
+                    )}
+                    {polo.imagenes[1] && (
+                        <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm text-[8px] text-white px-2 py-1 rounded-full uppercase font-bold">Toca para ver {showBack[polo.id] ? 'frente' : 'atrás'}</div>
+                    )}
+                  </div>
+
+                  <h3 className="text-black text-[9px] font-bold uppercase text-center mb-1 h-8 flex items-center leading-tight">{polo.nombre}</h3>
+                  <p className="text-black text-[16px] font-black mb-3">S/ {polo.precio}</p>
                   
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex gap-1.5 mb-3">
                     {polo.tallas.map(t => (
-                      <button key={t} onClick={() => setTallaSeleccionada({...tallaSeleccionada, [polo.id]: t})} className={`w-8 h-8 rounded-full text-[9px] font-black border transition-all ${tallaSeleccionada[polo.id] === t ? 'bg-black text-white border-black' : 'text-gray-400 border-gray-200 hover:border-black hover:text-black'}`}>{t}</button>
+                      <button key={t} onClick={() => setTallaSeleccionada({...tallaSeleccionada, [polo.id]: t})} className={`w-7 h-7 rounded-full text-[8px] font-black border transition-all ${tallaSeleccionada[polo.id] === t ? 'bg-black text-white border-black' : 'text-gray-400 border-gray-200'}`}>{t}</button>
                     ))}
                   </div>
                   <button onClick={() => {
                     if (polo.tallas.length > 0 && !tallaSeleccionada[polo.id]) return alert("Por favor, selecciona una talla.");
                     setCarrito([...carrito, {...polo, tallaElegida: tallaSeleccionada[polo.id], tempId: Date.now()}]);
-                  }} className="w-full py-4 rounded-xl bg-black text-white text-[10px] font-black tracking-widest hover:bg-gray-800 transition-colors">AÑADIR A LA BOLSA</button>
+                  }} className="w-full py-3.5 rounded-xl bg-black text-white text-[9px] font-black tracking-widest active:scale-95 transition-all">AÑADIR</button>
                 </div>
               ))}
             </div>
@@ -143,35 +169,35 @@ export default function HomeClient({ artistas = [], productos = [], banners = []
         </div>
       )}
 
-      {/* CARRITO */}
+      {/* PANEL CARRITO */}
       {carritoAbierto && (
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setCarritoAbierto(false)} />
-          <div className="relative w-full max-w-md bg-white h-full p-8 flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="flex justify-between items-center border-b pb-6 mb-6">
+          <div className="relative w-full max-w-md bg-white h-full p-6 flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="flex justify-between items-center border-b pb-4 mb-4">
               <h2 className="text-sm font-black uppercase text-black">Tu Bolsa</h2>
-              <button onClick={() => setCarritoAbierto(false)} className="text-black hover:rotate-90 transition-transform"><X /></button>
+              <button onClick={() => setCarritoAbierto(false)} className="p-2"><X /></button>
             </div>
             <div className="flex-1 overflow-y-auto space-y-4">
               {carrito.length === 0 && <p className="text-center text-gray-400 text-xs mt-10 uppercase tracking-widest">La bolsa está vacía</p>}
-              {carrito.map((item, i) => (
+              {carrito.map((item) => (
                 <div key={item.tempId} className="flex gap-4 items-center border-b pb-4">
-                  <img src={item.imagenes[0]} className="w-20 h-20 object-cover rounded-xl border border-gray-100" />
-                  <div className="flex-1 text-[10px] font-black uppercase text-black">
-                    {item.nombre} {item.tallaElegida && `(${item.tallaElegida})`}
+                  <img src={item.imagenes[0]} className="w-16 h-16 object-cover rounded-lg border border-gray-100" />
+                  <div className="flex-1 text-[9px] font-black uppercase text-black">
+                    {item.nombre} ({item.tallaElegida})
                     <p className="text-xs text-gray-400 mt-1">S/ {item.precio}</p>
                   </div>
-                  <button onClick={() => setCarrito(carrito.filter(c => c.tempId !== item.tempId))}><Trash2 size={18} className="text-gray-300 hover:text-red-500 transition-colors"/></button>
+                  <button onClick={() => setCarrito(carrito.filter(c => c.tempId !== item.tempId))} className="p-2 text-gray-300 active:text-red-500"><Trash2 size={18} /></button>
                 </div>
               ))}
             </div>
             {carrito.length > 0 && (
-              <div className="pt-6 border-t mt-auto text-black">
-                <div className="flex justify-between text-xl font-black mb-6 uppercase italic"><span>Total</span><span>S/ {carrito.reduce((s, i) => s + i.precio, 0)}</span></div>
+              <div className="pt-4 border-t mt-auto text-black">
+                <div className="flex justify-between text-lg font-black mb-4 uppercase italic"><span>Total</span><span>S/ {carrito.reduce((s, i) => s + i.precio, 0)}</span></div>
                 <button onClick={() => {
-                  const lista = carrito.map(p => `• ${p.nombre} ${p.tallaElegida ? `(${p.tallaElegida})` : ''}`).join('%0A');
-                  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=¡Hola! Mi pedido en Eras Merch:%0A${lista}`, '_blank');
-                }} className="w-full bg-black text-white py-6 rounded-xl font-black text-[11px] tracking-widest hover:bg-gray-800 transition-colors uppercase">Pedir por WhatsApp</button>
+                  const lista = carrito.map(p => `• ${p.nombre} (${p.tallaElegida})`).join('%0A');
+                  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Mi pedido:%0A${lista}`, '_blank');
+                }} className="w-full bg-black text-white py-5 rounded-xl font-black text-[10px] tracking-widest uppercase">Pedir por WhatsApp</button>
               </div>
             )}
           </div>
